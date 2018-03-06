@@ -1,5 +1,5 @@
 import random
-import cattle
+from cattle import Cattle
 
 class Node:
     def __init__(self, neighbours, I, n, code):
@@ -51,6 +51,16 @@ class Node:
             self.broadcast(False)
         if self.t == self.I:
             if not self.inconsistent:
-                self.I = min()
+                self.I = min(Cattle.Imax, 2*self.I)
+            else:
+                self.I = Cattle.Imin
+                self.reinit()
+
+    def reinit(self):
+        self.tau = random.randint(self.I // 2, self.I)
+        self.c = 0
+        self.t = 0
+        self.inconsistent = False
+        self.buffer = set()
 
 
