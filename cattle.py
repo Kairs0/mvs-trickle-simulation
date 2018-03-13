@@ -5,7 +5,8 @@ import random
 
 from node import Node
 
-class Cattle():
+
+class Cattle:
 
     def __init__(self):
         self.nodes = set()
@@ -17,11 +18,17 @@ class Cattle():
     def i_max(self):
         return self.i_min * (2 ** self.max)
 
-    def new_node(self, n):
-        node = Node(n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
+    def new_node(self, name, n):
+        node = Node(name=name, n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
         return node
 
     def tick(self):
         [node] = random.sample(self.nodes, 1)
         node.tick()
+
+    def get_node_by_name(self, name):
+        for node in self.nodes:
+            if node.name == name:
+                return node
+        return None
