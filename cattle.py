@@ -22,7 +22,7 @@ class Cattle:
     def new_node(self, name, n):
         node = Node(name=name, n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
-        print(f"Added node {node}")
+        print(f"Added node {node.name}")
         return node
 
     def tick(self):
