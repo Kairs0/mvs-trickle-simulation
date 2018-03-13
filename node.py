@@ -1,25 +1,23 @@
 import random
-from cattle import Cattle
+
 
 class Node:
-    def __init__(self, neighbours, I, n, code):
+    def __init__(self, n, i, k, imin, imax, neighbours=set()):
         self.neighbours = neighbours
-        self.I = I
+        self.i = i
         self.n = n
-        self.code = code
-        self.tau = random.randint(I//2, I)
+        self.k = k
+        self.imin = imin
+        self.imax = imax
+        self.tau = random.randint(i//2, i)
         self.c = 0
         self.t = 0
         self.inconsistent = False
         self.buffer = set()
 
     def broadcast(self, broadcast_code):
-        if broadcast_code:
-            code_to_broadcast = self.code
-        else:
-            code_to_broadcast = None
         for neighbour in self.neighbours:
-            neighbour.receive(self.n, code_to_broadcast)
+            neighbour.receive(self.n, broadcast_code)
 
     def receive(self, n, code):
         self.buffer.add((n, code))
@@ -32,7 +30,8 @@ class Node:
 
     def update(self, n, code):
         self.n = n
-        self.code = code
+        if code:
+            print("Code updated!")
 
     def tick(self):
         for message in self.buffer:
@@ -41,7 +40,7 @@ class Node:
             elif message[0] < self.n:
                 self.broadcast(True)
                 self.inconsistent = True
-            elif message[0] > self.n and message[1] is None:
+            elif message[0] > self.n and not message[1]:
                 self.broadcast(False)
                 self.inconsistent = True
             else:
@@ -49,18 +48,16 @@ class Node:
                 self.inconsistent = True
         if self.t == self.tau and self.c < self.k:
             self.broadcast(False)
-        if self.t == self.I:
+        if self.t == self.i:
             if not self.inconsistent:
-                self.I = min(Cattle.Imax, 2*self.I)
+                self.i = min(self.imax, 2*self.i)
             else:
-                self.I = Cattle.Imin
+                self.i = self.imin
                 self.reinit()
 
     def reinit(self):
-        self.tau = random.randint(self.I // 2, self.I)
+        self.tau = random.randint(self.i // 2, self.i)
         self.c = 0
         self.t = 0
         self.inconsistent = False
         self.buffer = set()
-
-
