@@ -2,11 +2,10 @@ import random
 
 
 class Node:
-    def __init__(self, n, code, i, k, imin, imax, neighbours=set()):
+    def __init__(self, n, i, k, imin, imax, neighbours=set()):
         self.neighbours = neighbours
         self.i = i
         self.n = n
-        self.code = code
         self.k = k
         self.imin = imin
         self.imax = imax
@@ -17,12 +16,8 @@ class Node:
         self.buffer = set()
 
     def broadcast(self, broadcast_code):
-        if broadcast_code:
-            code_to_broadcast = self.code
-        else:
-            code_to_broadcast = None
         for neighbour in self.neighbours:
-            neighbour.receive(self.n, code_to_broadcast)
+            neighbour.receive(self.n, broadcast_code)
 
     def receive(self, n, code):
         self.buffer.add((n, code))
@@ -35,7 +30,8 @@ class Node:
 
     def update(self, n, code):
         self.n = n
-        self.code = code
+        if code:
+            print("Code updated!")
 
     def tick(self):
         for message in self.buffer:
@@ -44,7 +40,7 @@ class Node:
             elif message[0] < self.n:
                 self.broadcast(True)
                 self.inconsistent = True
-            elif message[0] > self.n and message[1] is None:
+            elif message[0] > self.n and not message[1]:
                 self.broadcast(False)
                 self.inconsistent = True
             else:
