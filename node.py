@@ -4,7 +4,7 @@ import random
 class Node:
     id_counter = 0
 
-    def __init__(self, name, n, i, k, imin, imax, neighbours=set()):
+    def __init__(self, name, n, i, k, imin, imax):
         self.id = Node.id_counter
         Node.id_counter += 1
 
@@ -14,7 +14,7 @@ class Node:
         self.k = k
         self.imin = imin
         self.imax = imax
-        self.neighbours = neighbours
+        self.neighbours = set()
 
         self.tau = random.randint(i//2, i)
         self.c = 0
