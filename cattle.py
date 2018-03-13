@@ -17,8 +17,8 @@ class Cattle():
     def i_max(self):
         return self.i_min * (2 ** self.max)
 
-    def new_node(self):
-        node = Node()
+    def new_node(self, n):
+        node = Node(n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
         return node
 
