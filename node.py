@@ -2,13 +2,20 @@ import random
 
 
 class Node:
-    def __init__(self, n, i, k, imin, imax, neighbours=set()):
-        self.neighbours = neighbours
-        self.i = i
+    id_counter = 0
+
+    def __init__(self, name, n, i, k, imin, imax, neighbours=set()):
+        self.id = Node.id_counter
+        Node.id_counter += 1
+
+        self.name = name
         self.n = n
+        self.i = i
         self.k = k
         self.imin = imin
         self.imax = imax
+        self.neighbours = neighbours
+
         self.tau = random.randint(i//2, i)
         self.c = 0
         self.t = 0

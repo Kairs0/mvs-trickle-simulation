@@ -17,11 +17,12 @@ class Cattle():
     def i_max(self):
         return self.i_min * (2 ** self.max)
 
-    def new_node(self, n):
-        node = Node(n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
+    def new_node(self, name, n):
+        node = Node(name=name, n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
         return node
 
     def tick(self):
         [node] = random.sample(self.nodes, 1)
+        print(f"cattle: tick on node {node.name}")
         node.tick()
