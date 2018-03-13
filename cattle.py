@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+import time
 
 from node import Node
 
@@ -25,6 +26,7 @@ class Cattle:
 
     def tick(self):
         [node] = random.sample(self.nodes, 1)
+        print(f"cattle: tick on node {node.name}")
         node.tick()
 
     def get_node_by_name(self, name):
@@ -32,3 +34,8 @@ class Cattle:
             if node.name == name:
                 return node
         return None
+
+    def start(self, sleep=0):
+        while True:
+            self.tick()
+            time.sleep(sleep)
