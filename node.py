@@ -23,10 +23,15 @@ class Node:
         self.buffer = set()
 
     def broadcast(self, broadcast_code):
+        if broadcast_code:
+            print(f"Broadcast number {self.n} from node {self.name} to neighbours, with code")
+        else:
+            print(f"Broadcast number {self.n} from node {self.name} to neighbours")
         for neighbour in self.neighbours:
             neighbour.receive(self.n, broadcast_code)
 
     def receive(self, n, code):
+        print(f"Node {self.name} received number {n}")
         self.buffer.add((n, code))
 
     def add_neighbour(self, neighbour):
@@ -35,13 +40,18 @@ class Node:
     def remove_neighbour(self, neighbour):
         self.neighbours.remove(neighbour)
 
-    def update(self, n, code):
+    def update(self, n):
         self.n = n
-        if code:
-            print("Code updated!")
+        print(f"Node {self.name}: Code updated from version {n-1} to version {n}")
 
     def tick(self):
+        self.t += 1
         for message in self.buffer:
+            print(f"Buffer: {self.buffer}")
+            if message[1]:
+                print(f"Received number {message[0]} with code")
+            else:
+                print(f"Received number {message[0]}")
             if message[0] == self.n:
                 self.c += 1
             elif message[0] < self.n:
@@ -53,6 +63,7 @@ class Node:
             else:
                 self.update(*message)
                 self.inconsistent = True
+        self.buffer = set()
         if self.t == self.tau and self.c < self.k:
             self.broadcast(False)
         if self.t == self.i:
@@ -60,7 +71,7 @@ class Node:
                 self.i = min(self.imax, 2*self.i)
             else:
                 self.i = self.imin
-                self.reinit()
+            self.reinit()
 
     def reinit(self):
         self.tau = random.randint(self.i // 2, self.i)

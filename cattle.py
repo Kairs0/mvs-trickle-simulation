@@ -22,6 +22,7 @@ class Cattle:
     def new_node(self, name, n):
         node = Node(name=name, n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
+        print(f"Added node {node}")
         return node
 
     def tick(self):
@@ -36,6 +37,7 @@ class Cattle:
         return None
 
     def start(self, sleep=0):
+        print("Started")
         while True:
             self.tick()
             time.sleep(sleep)
