@@ -1,13 +1,16 @@
 import random
-from cattle import Cattle
+
 
 class Node:
-    def __init__(self, neighbours, I, n, code):
+    def __init__(self, n, code, i, k, imin, imax, neighbours=set()):
         self.neighbours = neighbours
-        self.I = I
+        self.i = i
         self.n = n
         self.code = code
-        self.tau = random.randint(I//2, I)
+        self.k = k
+        self.imin = imin
+        self.imax = imax
+        self.tau = random.randint(i//2, i)
         self.c = 0
         self.t = 0
         self.inconsistent = False
@@ -49,18 +52,16 @@ class Node:
                 self.inconsistent = True
         if self.t == self.tau and self.c < self.k:
             self.broadcast(False)
-        if self.t == self.I:
+        if self.t == self.i:
             if not self.inconsistent:
-                self.I = min(Cattle.Imax, 2*self.I)
+                self.i = min(self.imax, 2*self.i)
             else:
-                self.I = Cattle.Imin
+                self.i = self.imin
                 self.reinit()
 
     def reinit(self):
-        self.tau = random.randint(self.I // 2, self.I)
+        self.tau = random.randint(self.i // 2, self.i)
         self.c = 0
         self.t = 0
         self.inconsistent = False
         self.buffer = set()
-
-
