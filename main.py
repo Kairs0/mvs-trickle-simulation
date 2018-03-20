@@ -1,6 +1,10 @@
 from cattle import Cattle
 from random import randint, sample
 import time
+import logging
+
+logging.basicConfig(filename='network.log', level=logging.INFO)
+
 
 def create_cattle():
     cattle = Cattle()
@@ -10,7 +14,6 @@ def create_cattle():
     C = cattle.new_node("C", 1)
     D = cattle.new_node("D", 1)
     E = cattle.new_node("E", 1)
-
 
     A.add_neighbour(B)
     A.add_neighbour(D)
@@ -50,6 +53,10 @@ def broken_topology():
 
 
 if __name__ == "__main__":
+    # empty log file
+    with open('network.log', 'w'):
+        pass
+
     cattle = broken_topology()
     counter = 0
     next_update = counter + randint(50, 100)
@@ -60,7 +67,9 @@ if __name__ == "__main__":
             [updated_node] = sample(cattle.connected_nodes, 1)
             updated_node.n += 1
             print(f"main: update node {updated_node.name} to version {updated_node.n}")
+            logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
             next_update = counter + randint(500, 600)
+            logging.info(f"main: next update will occur at t={next_update}")
             print(f"main: next update will occur at t={next_update}")
 
         cattle.tick()

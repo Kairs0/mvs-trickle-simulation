@@ -3,8 +3,11 @@
 
 import random
 import time
+import logging
 
 from node import Node
+
+logging.basicConfig(filename='network.log', level=logging.INFO)
 
 
 class Cattle:
@@ -40,6 +43,7 @@ class Cattle:
         node = Node(name=name, n=n, i=self.i_min, k=self.k, imin=self.i_min, imax=self.i_max)
         self.nodes.add(node)
         print(f"Added node {node.name}")
+        logging.info(f"Added node {node.name}")
         if connected:
             self.connected_nodes.add(node)
         return node
@@ -57,12 +61,16 @@ class Cattle:
     def tick(self):
         self.time += 1
         [node] = random.sample(self.nodes, 1)
-        print(f"cattle: t={self.time} tick on node {node.name} (n={node.n}, t={node.t}, I={node.i}, tau={node.tau})")
+        message = f"cattle: t={self.time} tick on node" \
+                  f" {node.name} (n={node.n}, t={node.t}, I={node.i}, tau={node.tau})\n" \
+                  f"coverage for version {self.current_version} : {self.coverage * 100} %"
 
-        print(f"coverage for version {self.current_version} : {self.coverage * 100} %")
+        print(message)
+        logging.info(message)
 
         if self.coverage == 1:
             print(f"Coverage complete for {self.current_version} obtained at {self.time}")
+            logging.info(f"Coverage complete for {self.current_version} obtained at {self.time}")
 
         node.tick()
 
@@ -74,6 +82,7 @@ class Cattle:
 
     def start(self, sleep=0):
         print("Started")
+        logging.info("Started")
         while True:
             self.tick()
             time.sleep(sleep)

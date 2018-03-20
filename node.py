@@ -1,4 +1,7 @@
 import random
+import logging
+
+logging.basicConfig(filename='network.log', level=logging.INFO)
 
 
 class Node:
@@ -24,13 +27,16 @@ class Node:
 
     def broadcast(self, broadcast_code):
         if broadcast_code:
+            logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
             print(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
         else:
+            logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours")
             print(f"Node {self.name}: broadcast number {self.n} to neighbours")
         for neighbour in self.neighbours:
             neighbour.receive(self.n, broadcast_code)
 
     def receive(self, n, code):
+        logging.info(f"Node {self.name} received number {n}")
         print(f"Node {self.name} received number {n}")
         self.buffer.add((n, code))
 
@@ -42,14 +48,17 @@ class Node:
 
     def update(self, n):
         self.n = n
+        logging.info(f"Node {self.name}: Code updated from version {n-1} to version {n}")
         print(f"Node {self.name}: Code updated from version {n-1} to version {n}")
 
     def tick(self):
         self.t += 1
         for message in self.buffer:
             if message[1]:
+                logging.info(f"Node {self.name} received number {message[0]} with code")
                 print(f"Node {self.name} received number {message[0]} with code")
             else:
+                logging.info(f"Node {self.name} received number {message[0]}")
                 print(f"Node {self.name} received number {message[0]}")
             if message[0] == self.n:
                 self.c += 1
