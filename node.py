@@ -44,7 +44,6 @@ class Node:
         print(f"Node {self.name}: Code updated from version {self.n} to version {n}")
         self.n = n
 
-
     def tick(self):
         self.t += 1
         for message in self.buffer:
