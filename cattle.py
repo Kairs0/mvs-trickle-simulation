@@ -28,7 +28,7 @@ class Cattle:
     @property
     def coverage(self):
         total_nodes = len(self.nodes)
-        current_version = self.current_version()
+        current_version = self.current_version
         number_updated = len([node for node in self.nodes if node.n == current_version])
         return float(number_updated) / float(total_nodes)
 
@@ -58,6 +58,9 @@ class Cattle:
         self.time += 1
         [node] = random.sample(self.nodes, 1)
         print(f"cattle: t={self.time} tick on node {node.name} (n={node.n}, t={node.t}, I={node.i}, tau={node.tau})")
+
+        print(f"coverage for version {self.current_version} : {self.coverage * 100} %")
+        # print(f"coverage for version {self.current_version}: {self.coverage * 100} ")
         node.tick()
 
     def get_node_by_name(self, name):
