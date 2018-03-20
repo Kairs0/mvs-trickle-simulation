@@ -65,41 +65,56 @@ if __name__ == "__main__":
         pass
     make_chart = False
     update = False
+    make_average = True
+
     #cattle = broken_topology()
-    cattle = create_cattle()
-    counter = 0
-    next_update = -1
-    if update:
-        next_update = counter + randint(50, 100)
+    if not make_average:
+        cattle = create_cattle()
+        counter = 0
+        next_update = -1
+        if update:
+            next_update = counter + randint(50, 100)
+        versions = []
+        while True:
+            try:
+                counter += 1
+                if counter == next_update:
+                    [updated_node] = sample(cattle.connected_nodes, 1)
+                    updated_node.n += 1
+                    logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
+                    print(f"main: update node {updated_node.name} to version {updated_node.n}")
+                    next_update = counter + randint(50, 100)
+                    logging.info(f"main: next update will occur at t={next_update}")
+                    print(f"main: next update will occur at t={next_update}")
 
-    versions = []
-
-    while True:
-        try:
-            counter += 1
-            if counter == next_update:
-                [updated_node] = sample(cattle.connected_nodes, 1)
-                updated_node.n += 1
-                logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
-                print(f"main: update node {updated_node.name} to version {updated_node.n}")
-                next_update = counter + randint(50, 100)
-                logging.info(f"main: next update will occur at t={next_update}")
-                print(f"main: next update will occur at t={next_update}")
-
-            cattle.tick()
-            versions.append(cattle.get_versions())
-            if counter % DUMPING_FREQ == 0:
-                with open(FILE_NAME, 'w') as file:
-                    json.dump(versions, file)
-            time.sleep(0.1)
-        except KeyboardInterrupt:
-            if make_chart:
-                with open(FILE_NAME, 'w') as file:
-                    json.dump(versions, file)
-                f, ax = plt.subplots(1)
-                for node in cattle.nodes:
-                    ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
-                ax.set_ylim(ymin=1)
-                plt.legend()
-                plt.show()
-            break
+                cattle.tick()
+                versions.append(cattle.get_versions())
+                if counter % DUMPING_FREQ == 0:
+                    with open(FILE_NAME, 'w') as file:
+                        json.dump(versions, file)
+                time.sleep(0.1)
+            except KeyboardInterrupt:
+                if make_chart:
+                    with open(FILE_NAME, 'w') as file:
+                        json.dump(versions, file)
+                    f, ax = plt.subplots(1)
+                    for node in cattle.nodes:
+                        ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
+                    ax.set_ylim(ymin=1)
+                    plt.legend()
+                    plt.show()
+                break
+    else:
+        number_of_tries = 500
+        cumulated_time = 0
+        cumulated_code_sendings = 0
+        for i in range(number_of_tries):
+            cattle = create_cattle()
+            counter = 0
+            while abs(cattle.coverage - 1) > 10e-4:
+                counter += 1
+                cattle.tick()
+            cumulated_time += counter
+            cumulated_code_sendings += cattle.get_number_of_code_sendings()
+        print(f"\n\n\nAverage time to propagate new version: {cumulated_time/number_of_tries}\n"
+              f"Average number of code sendings to propagate new version: {cumulated_code_sendings/number_of_tries}")
