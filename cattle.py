@@ -60,7 +60,10 @@ class Cattle:
         print(f"cattle: t={self.time} tick on node {node.name} (n={node.n}, t={node.t}, I={node.i}, tau={node.tau})")
 
         print(f"coverage for version {self.current_version} : {self.coverage * 100} %")
-        # print(f"coverage for version {self.current_version}: {self.coverage * 100} ")
+
+        if self.coverage == 1:
+            print(f"Coverage complete for {self.current_version} obtained at {self.time}")
+
         node.tick()
 
     def get_node_by_name(self, name):
