@@ -11,7 +11,7 @@ class Cattle:
 
     def __init__(self):
         self.nodes = set()
-        self.max = 1
+        self.max = 5
         self.i_min = 10
         self.k = 5
         self.time = 0

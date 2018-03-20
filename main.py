@@ -28,8 +28,29 @@ def create_cattle():
     return cattle
 
 
+def broken_topology():
+    # Create a cyclic cattle preventing 100% update coverage
+    cattle = Cattle()
+
+    A = cattle.new_node("A", 1, connected=True)
+    B = cattle.new_node("B", 1)
+    C = cattle.new_node("C", 1)
+    D = cattle.new_node("D", 1)
+    E = cattle.new_node("E", 1)
+
+    A.add_neighbour(B)
+    A.add_neighbour(C)
+    A.add_neighbour(D)
+    B.add_neighbour(E)
+    C.add_neighbour(E)
+    D.add_neighbour(E)
+    E.add_neighbour(A)
+
+    return cattle
+
+
 if __name__ == "__main__":
-    cattle = create_cattle()
+    cattle = broken_topology()
     counter = 0
     next_update = counter + randint(50, 100)
 
@@ -39,10 +60,10 @@ if __name__ == "__main__":
             [updated_node] = sample(cattle.connected_nodes, 1)
             updated_node.n += 1
             print(f"main: update node {updated_node.name} to version {updated_node.n}")
-            next_update = counter + randint(50, 100)
+            next_update = counter + randint(500, 600)
             print(f"main: next update will occur at t={next_update}")
 
         cattle.tick()
-        time.sleep(0.25)
+        time.sleep(0.05)
 
 
