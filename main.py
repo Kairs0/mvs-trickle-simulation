@@ -68,10 +68,13 @@ if __name__ == "__main__":
     counter = 0
     next_update = counter + randint(50, 100)
     make_chart = False
-    # cattle = broken_topology()
+    update = False
+    #cattle = broken_topology()
     cattle = create_cattle()
     counter = 0
-    next_update = counter + randint(50, 100)
+    next_update = -1
+    if update:
+        next_update = counter + randint(50, 100)
 
     versions = []
 
@@ -92,7 +95,7 @@ if __name__ == "__main__":
             if counter % DUMPING_FREQ == 0:
                 with open(FILE_NAME, 'w') as file:
                     json.dump(versions, file)
-            # time.sleep(0.1)
+            time.sleep(0.1)
         except KeyboardInterrupt:
             if make_chart:
                 with open(FILE_NAME, 'w') as file:
@@ -103,4 +106,4 @@ if __name__ == "__main__":
                 ax.set_ylim(ymin=1)
                 plt.legend()
                 plt.show()
-                break
+            break
