@@ -86,3 +86,9 @@ class Cattle:
         while True:
             self.tick()
             time.sleep(sleep)
+
+    def get_versions(self):
+        return {node.name: node.n for node in self.nodes}
+
+    def get_number_of_code_sendings(self):
+        return sum([node.number_of_code_sendings for node in self.nodes])

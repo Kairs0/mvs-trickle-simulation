@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# trace
+trace.txt
+
 # Distribution / packaging
 .Python
 build/

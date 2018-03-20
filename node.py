@@ -25,9 +25,12 @@ class Node:
         self.inconsistent = False
         self.buffer = set()
 
+        self.number_of_code_sendings = 0
+
     def broadcast(self, broadcast_code):
         if broadcast_code:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
+            self.number_of_code_sendings += 1
             print(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
         else:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours")
@@ -47,9 +50,9 @@ class Node:
         self.neighbours.remove(neighbour)
 
     def update(self, n):
+        print(f"Node {self.name}: Code updated from version {self.n} to version {n}")
+        logging.info(f"Node {self.name}: Code updated from version {self.n} to version {n}")
         self.n = n
-        logging.info(f"Node {self.name}: Code updated from version {n-1} to version {n}")
-        print(f"Node {self.name}: Code updated from version {n-1} to version {n}")
 
     def tick(self):
         self.t += 1

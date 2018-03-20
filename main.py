@@ -1,9 +1,16 @@
 from cattle import Cattle
 from random import randint, sample
 import time
+
 import logging
 
 logging.basicConfig(filename='network.log', level=logging.INFO)
+
+import json
+import matplotlib.pyplot as plt
+
+DUMPING_FREQ = 25
+FILE_NAME = "trace.txt"
 
 
 def create_cattle():
@@ -60,19 +67,40 @@ if __name__ == "__main__":
     cattle = broken_topology()
     counter = 0
     next_update = counter + randint(50, 100)
+    make_chart = False
+    # cattle = broken_topology()
+    cattle = create_cattle()
+    counter = 0
+    next_update = counter + randint(50, 100)
+
+    versions = []
 
     while True:
-        counter += 1
-        if counter == next_update:
-            [updated_node] = sample(cattle.connected_nodes, 1)
-            updated_node.n += 1
-            print(f"main: update node {updated_node.name} to version {updated_node.n}")
-            logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
-            next_update = counter + randint(500, 600)
-            logging.info(f"main: next update will occur at t={next_update}")
-            print(f"main: next update will occur at t={next_update}")
+        try:
+            counter += 1
+            if counter == next_update:
+                [updated_node] = sample(cattle.connected_nodes, 1)
+                updated_node.n += 1
+                logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
+                print(f"main: update node {updated_node.name} to version {updated_node.n}")
+                next_update = counter + randint(50, 100)
+                logging.info(f"main: next update will occur at t={next_update}")
+                print(f"main: next update will occur at t={next_update}")
 
-        cattle.tick()
-        time.sleep(0.05)
-
-
+            cattle.tick()
+            versions.append(cattle.get_versions())
+            if counter % DUMPING_FREQ == 0:
+                with open(FILE_NAME, 'w') as file:
+                    json.dump(versions, file)
+            # time.sleep(0.1)
+        except KeyboardInterrupt:
+            if make_chart:
+                with open(FILE_NAME, 'w') as file:
+                    json.dump(versions, file)
+                f, ax = plt.subplots(1)
+                for node in cattle.nodes:
+                    ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
+                ax.set_ylim(ymin=1)
+                plt.legend()
+                plt.show()
+                break
