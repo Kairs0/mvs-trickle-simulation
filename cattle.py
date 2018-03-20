@@ -43,7 +43,7 @@ class Cattle:
         if connected:
             self.connected_nodes.add(node)
         return node
-    
+
     def remove_node(self, node=None, name=None):
         if not node and not name:
             raise ValueError("Must specify either a node or a name")
@@ -57,7 +57,7 @@ class Cattle:
     def tick(self):
         self.time += 1
         [node] = random.sample(self.nodes, 1)
-        print(f"cattle: t={self.time} tick on node {node.name}")
+        print(f"cattle: t={self.time} tick on node {node.name} (n={node.n}, t={node.t}, I={node.i}, tau={node.tau})")
         node.tick()
 
     def get_node_by_name(self, name):

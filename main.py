@@ -43,6 +43,6 @@ if __name__ == "__main__":
             print(f"main: next update will occur at t={next_update}")
 
         cattle.tick()
-        time.sleep(0.1)
+        time.sleep(0.25)
 
 
