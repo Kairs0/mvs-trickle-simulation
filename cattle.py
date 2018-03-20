@@ -43,7 +43,7 @@ class Cattle:
     def tick(self):
         self.time += 1
         [node] = random.sample(self.nodes, 1)
-        print(f"cattle: tick on node {node.name}")
+        print(f"cattle: t={self.time} tick on node {node.name}")
         node.tick()
 
     def get_node_by_name(self, name):
