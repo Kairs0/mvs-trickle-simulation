@@ -57,3 +57,6 @@ class Cattle:
         while True:
             self.tick()
             time.sleep(sleep)
+
+    def get_versions(self):
+        return {node.name: node.n for node in self.nodes}

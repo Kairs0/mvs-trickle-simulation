@@ -33,6 +33,9 @@ if __name__ == "__main__":
     counter = 0
     next_update = counter + randint(50, 100)
 
+    times = []
+    versions = []
+
     while True:
         counter += 1
         if counter == next_update:
@@ -43,6 +46,8 @@ if __name__ == "__main__":
             print(f"main: next update will occur at t={next_update}")
 
         cattle.tick()
+        times.append(counter)
+
         time.sleep(0.25)
 
 

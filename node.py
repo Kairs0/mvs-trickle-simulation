@@ -41,8 +41,9 @@ class Node:
         self.neighbours.remove(neighbour)
 
     def update(self, n):
+        print(f"Node {self.name}: Code updated from version {self.n} to version {n}")
         self.n = n
-        print(f"Node {self.name}: Code updated from version {n-1} to version {n}")
+
 
     def tick(self):
         self.t += 1
