@@ -14,6 +14,7 @@ class Cattle:
         self.max = 1
         self.i_min = 10
         self.k = 5
+        self.time = 0
 
     @property
     def i_max(self):
@@ -26,6 +27,7 @@ class Cattle:
         return node
 
     def tick(self):
+        self.time += 1
         [node] = random.sample(self.nodes, 1)
         print(f"cattle: tick on node {node.name}")
         node.tick()
