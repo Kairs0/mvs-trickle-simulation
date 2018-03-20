@@ -34,12 +34,34 @@ def create_cattle():
     return cattle
 
 
+def broken_topology():
+    # Create a cyclic cattle preventing 100% update coverage
+    cattle = Cattle()
+
+    A = cattle.new_node("A", 1, connected=True)
+    B = cattle.new_node("B", 1)
+    C = cattle.new_node("C", 1)
+    D = cattle.new_node("D", 1)
+    E = cattle.new_node("E", 1)
+
+    A.add_neighbour(B)
+    A.add_neighbour(C)
+    A.add_neighbour(D)
+    B.add_neighbour(E)
+    C.add_neighbour(E)
+    D.add_neighbour(E)
+    E.add_neighbour(A)
+
+    return cattle
+
+
 if __name__ == "__main__":
+    make_chart = False
+    #cattle = broken_topology()
     cattle = create_cattle()
     counter = 0
     next_update = counter + randint(50, 100)
 
-    times = []
     versions = []
 
     while True:
@@ -53,19 +75,19 @@ if __name__ == "__main__":
                 print(f"main: next update will occur at t={next_update}")
 
             cattle.tick()
-            times.append(counter)
             versions.append(cattle.get_versions())
             if counter % DUMPING_FREQ == 0:
                 with open(FILE_NAME, 'w') as file:
-                    json.dump((times, versions), file)
+                    json.dump(versions, file)
             # time.sleep(0.1)
         except KeyboardInterrupt:
-            with open(FILE_NAME, 'w') as file:
-                json.dump((times, versions), file)
-            f, ax = plt.subplots(1)
-            for node in cattle.nodes:
-                ax.plot(times, [ver[node.name] for ver in versions], label=node.name)
-            ax.set_ylim(ymin=1)
-            plt.legend()
-            plt.show()
-            break
+            if make_chart:
+                with open(FILE_NAME, 'w') as file:
+                    json.dump(versions, file)
+                f, ax = plt.subplots(1)
+                for node in cattle.nodes:
+                    ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
+                ax.set_ylim(ymin=1)
+                plt.legend()
+                plt.show()
+                break

@@ -22,8 +22,11 @@ class Node:
         self.inconsistent = False
         self.buffer = set()
 
+        self.number_of_code_sendings = 0
+
     def broadcast(self, broadcast_code):
         if broadcast_code:
+            self.number_of_code_sendings += 1
             print(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
         else:
             print(f"Node {self.name}: broadcast number {self.n} to neighbours")
