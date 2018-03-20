@@ -17,6 +17,20 @@ class Cattle:
         self.time = 0
         self.connected_nodes = set()
 
+    @property
+    def current_version(self):
+        v = 0
+        for node in self.nodes:
+            if node.n > v:
+                v = node.n
+        return v
+
+    @property
+    def coverage(self):
+        total_nodes = len(self.nodes)
+        current_version = self.current_version()
+        number_updated = len([node for node in self.nodes if node.n == current_version])
+        return float(number_updated) / float(total_nodes)
 
     @property
     def i_max(self):
