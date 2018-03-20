@@ -27,20 +27,17 @@ def create_cattle():
 
     return cattle
 
+
 if __name__ == "__main__":
     cattle = create_cattle()
     counter = 0
-    current_version = 2
     next_update = counter + randint(50, 100)
-    print(f"main: next update will occur at t={next_update}")
 
     while True:
         counter += 1
-
         if counter == next_update:
-            current_version += 1
             [updated_node] = sample(cattle.connected_nodes, 1)
-            updated_node.n = current_version
+            updated_node.n += 1
             print(f"main: update node {updated_node.name} to version {updated_node.n}")
             next_update = counter + randint(50, 100)
             print(f"main: next update will occur at t={next_update}")
