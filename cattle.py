@@ -69,7 +69,8 @@ class Cattle:
         logging.info(message)
 
         if self.coverage == 1:
-            print(f"Coverage complete for {self.current_version} obtained at {self.time}")
+            print(f"Coverage complete for {self.current_version} obtained at {self.time} with "
+                  f"{self.get_number_of_code_sendings()} code sendings")
             logging.info(f"Coverage complete for {self.current_version} obtained at {self.time}")
 
         node.tick()

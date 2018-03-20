@@ -63,10 +63,6 @@ if __name__ == "__main__":
     # empty log file
     with open('network.log', 'w'):
         pass
-
-    cattle = broken_topology()
-    counter = 0
-    next_update = counter + randint(50, 100)
     make_chart = False
     update = False
     #cattle = broken_topology()
