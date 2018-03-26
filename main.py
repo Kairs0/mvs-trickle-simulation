@@ -63,9 +63,9 @@ if __name__ == "__main__":
     # empty log file
     with open('network.log', 'w'):
         pass
-    make_chart = False
-    update = False
-    make_average = True
+    make_chart = True
+    update = True
+    make_average = False
 
     #cattle = broken_topology()
     if not make_average:
@@ -75,6 +75,8 @@ if __name__ == "__main__":
         if update:
             next_update = counter + randint(50, 100)
         versions = []
+        time_all_versions_equal = 0
+        time = 0
         while True:
             try:
                 counter += 1
@@ -83,17 +85,21 @@ if __name__ == "__main__":
                     updated_node.n += 1
                     logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
                     print(f"main: update node {updated_node.name} to version {updated_node.n}")
-                    next_update = counter + randint(50, 100)
+                    next_update = counter + 500
                     logging.info(f"main: next update will occur at t={next_update}")
                     print(f"main: next update will occur at t={next_update}")
 
                 cattle.tick()
+                time += 1
+                if len(set(cattle.get_versions().values())) == 1:
+                    time_all_versions_equal += 1
                 versions.append(cattle.get_versions())
                 if counter % DUMPING_FREQ == 0:
                     with open(FILE_NAME, 'w') as file:
                         json.dump(versions, file)
-                time.sleep(0.1)
+                #time.sleep(0.1)
             except KeyboardInterrupt:
+                print(f"All versions equal {100*time_all_versions_equal/time}% of the time")
                 if make_chart:
                     with open(FILE_NAME, 'w') as file:
                         json.dump(versions, file)
