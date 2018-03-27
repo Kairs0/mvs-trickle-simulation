@@ -31,16 +31,16 @@ class Node:
         if broadcast_code:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
             self.number_of_code_sendings += 1
-            print(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
+            logging.debug(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
         else:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours")
-            print(f"Node {self.name}: broadcast number {self.n} to neighbours")
+            logging.debug(f"Node {self.name}: broadcast number {self.n} to neighbours")
         for neighbour in self.neighbours:
             neighbour.receive(self.n, broadcast_code)
 
     def receive(self, n, code):
-        logging.info(f"Node {self.name} received number {n}")
-        print(f"Node {self.name} received number {n}")
+        logging.info(f"Node {self.name} added number {n} into buffer")
+        logging.debug(f"Node {self.name} added number {n} into buffer")
         self.buffer.add((n, code))
 
     def add_neighbour(self, neighbour):
@@ -50,7 +50,7 @@ class Node:
         self.neighbours.remove(neighbour)
 
     def update(self, n):
-        print(f"Node {self.name}: Code updated from version {self.n} to version {n}")
+        logging.debug(f"Node {self.name}: Code updated from version {self.n} to version {n}")
         logging.info(f"Node {self.name}: Code updated from version {self.n} to version {n}")
         self.n = n
 
@@ -59,10 +59,10 @@ class Node:
         for message in self.buffer:
             if message[1]:
                 logging.info(f"Node {self.name} received number {message[0]} with code")
-                print(f"Node {self.name} received number {message[0]} with code")
+                logging.debug(f"Node {self.name} received number {message[0]} with code")
             else:
                 logging.info(f"Node {self.name} received number {message[0]}")
-                print(f"Node {self.name} received number {message[0]}")
+                logging.debug(f"Node {self.name} received number {message[0]}")
             if message[0] == self.n:
                 self.c += 1
             elif message[0] < self.n:
