@@ -43,8 +43,8 @@ Modélise un nœud avec l'ensemble des ses caractéristiques.
 
 | name | type | description |
 |:----:|:----:|:----------- |
-| `id` | `int` | |
-| `name` | `str` | |
+| `id` | `int` | id du noeud |
+| `name` | `str` | nom du noeud |
 | `neighbours` | `set<Node>` | ensemble des nœuds présents dans le rayon du nœud |
 | `Imin`, `Imax` | `int` | bornes de la valeur possibles pour I |
 | `I` | `int` | représente la durée de l'intervalle courant |
