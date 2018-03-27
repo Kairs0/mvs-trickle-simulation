@@ -43,10 +43,10 @@ Modélise un nœud avec l'ensemble des ses caractéristiques.
 
 | name | type | description |
 |:----:|:----:|:----------- |
-| `id` | | |
-| `name` | | |
+| `id` | `int` | |
+| `name` | `str` | |
 | `neighbours` | `set<Node>` | ensemble des nœuds présents dans le rayon du nœud |
-| `Imin`, `Imax` | | bornes de la valeur possibles pour I |
+| `Imin`, `Imax` | `int` | bornes de la valeur possibles pour I |
 | `I` | `int` | représente la durée de l'intervalle courant |
 | `tau` | `int` | moment de la communication |
 | `c` | `int` | compteur |
@@ -61,11 +61,11 @@ Modélise un nœud avec l'ensemble des ses caractéristiques.
 
 | signature | description |
 |:---------:|:----------- |
-| `broadcast(n, ?code)` | envoie un message (version + éventuellement code) à l'ensemble des voisins |
-| `receive(n, ?code)` | ajoute le message reçu au buffer du nœud |
+| `broadcast(bool)` | envoie un message (version + éventuellement code) à l'ensemble des voisins |
+| `receive(int, bool)` | ajoute le message reçu au buffer du nœud |
 | `add_neighbour(node)` | |
 | `remove_neighbour(node)` | |
-| `update(n, node)` | met à jour la version et le code |
+| `update(int)` | met à jour la version et le code |
 | `tick()`  | effectue actions (selon messages dans buffer et temps t) |
 | `reinit()` | réinitialise le nœud |
 
@@ -91,13 +91,13 @@ Gère le réseau de nœuds avec une horloge activant à chaque tour un nœud.
 
 | signature | description |
 |:---------:|:----------- |
-| `new_node(name, n, ?connected=False)` | |
-| `remove_node(?node, ?name)`| |
+| `new_node(str, int, bool=False)` | ajoute un noeud, connecté ou non |
+| `remove_node(node, str)`| Retire un noeud |
 | `tick()` | choisit un noeud au hasard dans la liste de nœuds et appelle la méthode `tick()` du noeud |
-| `start()` | |
-| `get_node_by_name(name)` | |
-| `get_versions()` | |
-| `get_number_of_code_sendings()` | |
+| `start()` | commence la simulation |
+| `get_node_by_name(name)` | retourne un noeud de nom donné|
+| `get_versions()` | retourne un dictionaire donnant les versions de chaque noeud |
+| `get_number_of_code_sendings()` | retourne le nombre total de message envoyés lors de la simulation |
 | `main()` | itération de ticks (à chaque tick, le nœud va faire ses actions (recevoir, émettre, mettre à jour) ; une fois que toutes ses actions ont été effectuées, le cattle envoie le tick suivant. |
 
 ## Seconde version: ajout des paramètres dynamiques
