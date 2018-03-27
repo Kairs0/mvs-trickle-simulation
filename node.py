@@ -25,16 +25,16 @@ class Node:
         self.inconsistent = False
         self.buffer = set()
 
-        self.number_of_code_sendings = 0
+        self.number_of_sent_messages = 0
 
     def broadcast(self, broadcast_code):
         if broadcast_code:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
-            self.number_of_code_sendings += 1
             logging.debug(f"Node {self.name}: broadcast number {self.n} to neighbours, with code")
         else:
             logging.info(f"Node {self.name}: broadcast number {self.n} to neighbours")
             logging.debug(f"Node {self.name}: broadcast number {self.n} to neighbours")
+        self.number_of_sent_messages += 1
         for neighbour in self.neighbours:
             neighbour.receive(self.n, broadcast_code)
 

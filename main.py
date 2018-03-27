@@ -3,6 +3,7 @@ from random import randint, sample, random
 import json
 import matplotlib.pyplot as plt
 import time
+import copy
 
 import logging
 
@@ -23,7 +24,7 @@ CHART_RANDOM = 3
 
 
 CONFIG = CHART_VERSIONS_EVOLUTION
-TOPOLOGY = RANDOM_TOPOLOGY
+TOPOLOGY = SIMPLE_TOPOLOGY
 NB_NODES = 10
 AVG_NB_NEIGHBOURS = 8
 FREQ = 500
@@ -150,22 +151,27 @@ if __name__ == "__main__":
             with open('network.log', 'w'):
                 pass
             if TOPOLOGY == SIMPLE_TOPOLOGY:
-                cattle = create_cattle()
+                model = create_cattle()
             elif TOPOLOGY == BROKEN_TOPOLOGY:
-                cattle = broken_topology()
+                model = broken_topology()
             else:
-                cattle = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
-            counter = 0
-            while abs(cattle.coverage - 1) > 10e-4:
-                counter += 1
-                if counter == 1000:
-                    failed += 1
-                    f = True
+                model = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
+            f = False
+            for j in range(4):
+                f = False
+                cattle = copy.deepcopy(model)
+                counter = 0
+                while abs(cattle.coverage - 1) > 10e-4:
+                    counter += 1
+                    if counter == 1000:
+                        f = True
+                        break
+                    cattle.tick()
+                if f:
                     break
-                cattle.tick()
-            if not f:
                 cumulated_time += counter
                 cumulated_code_sendings += cattle.get_number_of_code_sendings()
+
         print(f"\n\n\nAverage time to propagate new version: {cumulated_time/number_of_tries}\n"
               f"Average number of code sendings to propagate new version: {cumulated_code_sendings/number_of_tries}\n"
               f"Percentage of times failed: {failed/number_of_tries}")
@@ -212,22 +218,28 @@ if __name__ == "__main__":
         failures = []
         for k in range(NB_NODES):
             print(k)
-            number_of_tries = 100
+            number_of_tries = 25
             failed = 0
             for i in range(number_of_tries):
-                f = False
                 with open('network.log', 'w'):
                     pass
-                cattle = random_topology(NB_NODES, k)
-                counter = 0
-                while abs(cattle.coverage - 1) > 10e-4:
-                    counter += 1
-                    if counter == 1000:
-                        failed += 1
-                        f = True
+                model = random_topology(NB_NODES, k)
+                f = False
+                for j in range(4):
+                    f = False
+                    cattle = copy.deepcopy(model)
+                    counter = 0
+                    while abs(cattle.coverage - 1) > 10e-4:
+                        counter += 1
+                        if counter == 1000:
+                            f = True
+                            break
+                        cattle.tick()
+                    if f:
                         break
-                    cattle.tick()
-            failures.append(failed/100)
+                if f:
+                    failed += 1
+            failures.append(failed/25)
         plt.plot(list(range(NB_NODES)), failures)
         plt.show()
     else:

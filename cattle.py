@@ -83,9 +83,9 @@ class Cattle:
 
         if self.coverage == 1:
             logging.debug(f"Coverage complete for {self.current_version} obtained at {self.time} with "
-                  f"{self.get_number_of_code_sendings()} code sendings")
+                  f"{self.get_number_of_code_sendings()} messages sent")
             logging.info(f"Coverage complete for {self.current_version} obtained at {self.time} with "
-                          f"{self.get_number_of_code_sendings()} code sendings")
+                          f"{self.get_number_of_code_sendings()} messages sent")
         if self.min_version > min_v:
             logging.debug(f"node {node.name} is the last one to update from version {min_v} to {self.min_version}")
             logging.info(f"node {node.name} is the last one to update from version {min_v} to {self.min_version}")
@@ -107,4 +107,4 @@ class Cattle:
         return {node.name: node.n for node in self.nodes}
 
     def get_number_of_code_sendings(self):
-        return sum([node.number_of_code_sendings for node in self.nodes])
+        return sum([node.number_of_sent_messages for node in self.nodes])
