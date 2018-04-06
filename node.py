@@ -90,3 +90,6 @@ class Node:
         self.t = 0
         self.inconsistent = False
         self.buffer = set()
+
+    def copy(self):
+        return Node(self.name, self.n, self.i, self.k, self.imin, self.imax)

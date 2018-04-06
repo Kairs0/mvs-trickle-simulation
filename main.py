@@ -23,9 +23,9 @@ CHART_FREQUENCY_NEW_VERSION = 2
 CHART_RANDOM = 3
 
 
-CONFIG = CHART_VERSIONS_EVOLUTION
+CONFIG = CHART_RANDOM
 TOPOLOGY = SIMPLE_TOPOLOGY
-NB_NODES = 10
+NB_NODES = 100
 AVG_NB_NEIGHBOURS = 8
 FREQ = 500
 
@@ -216,18 +216,18 @@ if __name__ == "__main__":
         plt.show()
     elif CONFIG == CHART_RANDOM:
         failures = []
-        for k in range(NB_NODES):
+        for k in range(3, 21, 2):
             print(k)
-            number_of_tries = 25
+            number_of_tries = 10
             failed = 0
             for i in range(number_of_tries):
                 with open('network.log', 'w'):
                     pass
                 model = random_topology(NB_NODES, k)
                 f = False
-                for j in range(4):
+                for j in range(10):
                     f = False
-                    cattle = copy.deepcopy(model)
+                    cattle = model.copy()
                     counter = 0
                     while abs(cattle.coverage - 1) > 10e-4:
                         counter += 1
@@ -239,8 +239,8 @@ if __name__ == "__main__":
                         break
                 if f:
                     failed += 1
-            failures.append(failed/25)
-        plt.plot(list(range(NB_NODES)), failures)
+            failures.append(failed / 10)
+        plt.plot(list(range(3, 21, 2)), failures)
         plt.show()
     else:
         print("ERROR: Unknown config!")
