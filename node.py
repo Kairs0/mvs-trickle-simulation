@@ -1,6 +1,8 @@
 import random
 import logging
 
+BROADCAST = False
+
 logging.basicConfig(filename='network.log', level=logging.INFO)
 
 
@@ -76,7 +78,7 @@ class Node:
                 self.inconsistent = True
         self.buffer = set()
         if self.t == self.tau and self.c < self.k:
-            self.broadcast(False)
+            self.broadcast(BROADCAST)
         if self.t == self.i:
             if not self.inconsistent:
                 self.i = min(self.imax, 2*self.i)

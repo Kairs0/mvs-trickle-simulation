@@ -1,4 +1,5 @@
 from cattle import Cattle
+import node
 from random import randint, sample, random
 import json
 import matplotlib.pyplot as plt
@@ -17,17 +18,26 @@ SIMPLE_TOPOLOGY = 0
 BROKEN_TOPOLOGY = 1
 RANDOM_TOPOLOGY = 2
 
-CHART_VERSIONS_EVOLUTION = 0
-AVERAGE = 1
-CHART_FREQUENCY_NEW_VERSION = 2
-CHART_RANDOM = 3
+CHART_VERSIONS_EVOLUTION = 3
+AVERAGE = 4
+CHART_RANDOM = 5
 
+BASIC = 6
+VARIANT = 7
 
+# Change these variables here
 CONFIG = CHART_RANDOM
-TOPOLOGY = SIMPLE_TOPOLOGY
+
+TOPOLOGY = BROKEN_TOPOLOGY
+
+FREQ_NEW_VERSION = 100
+
 NB_NODES = 100
-AVG_NB_NEIGHBOURS = 8
-FREQ = 500
+
+AVG_NB_NEIGHBOURS = 2
+
+ALGORITHM_VERSION = VARIANT
+# End of the section you should change
 
 
 def create_cattle():
@@ -95,7 +105,7 @@ if __name__ == "__main__":
     # empty log file
     with open('network.log', 'w'):
         pass
-
+    node.BROADCAST = ALGORITHM_VERSION == VARIANT
     if CONFIG == CHART_VERSIONS_EVOLUTION:
         if TOPOLOGY == SIMPLE_TOPOLOGY:
             cattle = create_cattle()
@@ -104,143 +114,106 @@ if __name__ == "__main__":
         else:
             cattle = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
         counter = 0
-        next_update = counter + FREQ
+        next_update = counter + FREQ_NEW_VERSION
         versions = []
         time_all_versions_equal = 0
         time = 0
         while True:
-            try:
-                counter += 1
-                if counter == next_update:
-                    [updated_node] = sample(cattle.connected_nodes, 1)
-                    updated_node.n += 1
-                    logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
-                    logging.debug(f"main: update node {updated_node.name} to version {updated_node.n}")
-                    next_update = counter + FREQ
-                    logging.info(f"main: next update will occur at t={next_update}")
-                    logging.debug(f"main: next update will occur at t={next_update}")
-
-                cattle.tick()
-                time += 1
-                if len(set(cattle.get_versions().values())) == 1:
-                    time_all_versions_equal += 1
-                versions.append(cattle.get_versions())
-                if counter % DUMPING_FREQ == 0:
-                    with open(FILE_NAME, 'w') as file:
-                        json.dump(versions, file)
-                # time.sleep(0.1)
-            except KeyboardInterrupt:
-                print(f"All versions equal {100*time_all_versions_equal/time}% of the time")
+            counter += 1
+            if counter == next_update:
+                [updated_node] = sample(cattle.connected_nodes, 1)
+                updated_node.n += 1
+                logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
+                logging.debug(f"main: update node {updated_node.name} to version {updated_node.n}")
+                next_update = counter + FREQ_NEW_VERSION
+                logging.info(f"main: next update will occur at t={next_update}")
+                logging.debug(f"main: next update will occur at t={next_update}")
+            cattle.tick()
+            time += 1
+            if len(set(cattle.get_versions().values())) == 1:
+                time_all_versions_equal += 1
+            versions.append(cattle.get_versions())
+            if counter % DUMPING_FREQ == 0:
                 with open(FILE_NAME, 'w') as file:
                     json.dump(versions, file)
-                f, ax = plt.subplots(1)
-                for node in cattle.nodes:
-                    ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
-                ax.set_ylim(ymin=0)
-                plt.legend()
-                plt.show()
+            if time == 5000:
                 break
+        print(f"All versions equal {100*time_all_versions_equal/time}% of the time")
+        with open(FILE_NAME, 'w') as file:
+            json.dump(versions, file)
+        f, ax = plt.subplots(1)
+        for node in cattle.nodes:
+            ax.plot(list(range(len(versions))), [ver[node.name] for ver in versions], label=node.name)
+        ax.set_ylim(ymin=0)
+        plt.legend()
+        plt.show()
+        exit()
     elif CONFIG == AVERAGE:
         number_of_tries = 100
         cumulated_time = 0
         cumulated_code_sendings = 0
         failed = 0
         for i in range(number_of_tries):
-            print(i)
-            f = False
             with open('network.log', 'w'):
                 pass
             if TOPOLOGY == SIMPLE_TOPOLOGY:
-                model = create_cattle()
+                cattle = create_cattle()
             elif TOPOLOGY == BROKEN_TOPOLOGY:
-                model = broken_topology()
+                cattle = broken_topology()
             else:
-                model = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
+                cattle = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
             f = False
-            for j in range(4):
+            counter = 0
+            last_coverage = 0
+            while abs(cattle.coverage - 1) > 10e-4:
+                if cattle.coverage != last_coverage:
+                    last_coverage = cattle.coverage
+                    counter = 0
+                counter += 1
+                if counter == 1000:
+                    failed += 1
+                    f = True
+                    break
+                cattle.tick()
+            if not f:
+                cumulated_time += counter
+                cumulated_code_sendings += cattle.get_number_of_code_sendings()
+        if failed != number_of_tries:
+            print(f"\n\n\nAverage time to propagate new version: {cumulated_time/(number_of_tries-failed)}\n"
+                  f"Average number of messages sent to propagate new version: {cumulated_code_sendings/(number_of_tries-failed)}\n"
+                  f"Percentage of times failed: {failed/number_of_tries}")
+        else:
+            print("Percentage of times failed: 1.0")
+    elif CONFIG == CHART_RANDOM:
+        K = []
+        failures = []
+        for k in range(1, NB_NODES):
+            K.append(k)
+            print(k)
+            number_of_tries = 50
+            failed = 0
+            for i in range(number_of_tries):
+                with open('network.log', 'w'):
+                    pass
+                cattle = random_topology(NB_NODES, k)
                 f = False
-                cattle = copy.deepcopy(model)
                 counter = 0
+                last_coverage = 0
                 while abs(cattle.coverage - 1) > 10e-4:
+                    if cattle.coverage != last_coverage:
+                        last_coverage = cattle.coverage
+                        counter = 0
                     counter += 1
                     if counter == 1000:
                         f = True
                         break
                     cattle.tick()
                 if f:
-                    break
-                cumulated_time += counter
-                cumulated_code_sendings += cattle.get_number_of_code_sendings()
-
-        print(f"\n\n\nAverage time to propagate new version: {cumulated_time/number_of_tries}\n"
-              f"Average number of code sendings to propagate new version: {cumulated_code_sendings/number_of_tries}\n"
-              f"Percentage of times failed: {failed/number_of_tries}")
-    elif CONFIG == CHART_FREQUENCY_NEW_VERSION:
-        frequencies, times_equal_versions = [], []
-        for frequency in range(100, 1100, 100):
-            print(frequency)
-            s = 0
-            for i in range(1000):
-                with open('network.log', 'w'):
-                    pass
-                if TOPOLOGY == SIMPLE_TOPOLOGY:
-                    cattle = create_cattle()
-                elif TOPOLOGY == BROKEN_TOPOLOGY:
-                    cattle = broken_topology()
-                else:
-                    cattle = random_topology(NB_NODES, AVG_NB_NEIGHBOURS)
-                counter = 0
-                next_update = counter + frequency
-                time_all_versions_equal = 0
-                time = 0
-                while True:
-                    counter += 1
-                    if counter == next_update:
-                        [updated_node] = sample(cattle.connected_nodes, 1)
-                        updated_node.n += 1
-                        if updated_node.n == 30:
-                            break
-                        logging.info(f"main: update node {updated_node.name} to version {updated_node.n}")
-                        logging.debug(f"main: update node {updated_node.name} to version {updated_node.n}")
-                        next_update = counter + frequency
-                        logging.info(f"main: next update will occur at t={next_update}")
-                        logging.debug(f"main: next update will occur at t={next_update}")
-                    cattle.tick()
-                    time += 1
-                    if len(set(cattle.get_versions().values())) == 1:
-                        time_all_versions_equal += 1
-                s += time_all_versions_equal/time
-            frequencies.append(frequency)
-            times_equal_versions.append(100*s/1000)
-        plt.plot(frequencies, times_equal_versions)
-        plt.show()
-    elif CONFIG == CHART_RANDOM:
-        failures = []
-        for k in range(3, 21, 2):
-            print(k)
-            number_of_tries = 10
-            failed = 0
-            for i in range(number_of_tries):
-                with open('network.log', 'w'):
-                    pass
-                model = random_topology(NB_NODES, k)
-                f = False
-                for j in range(10):
-                    f = False
-                    cattle = model.copy()
-                    counter = 0
-                    while abs(cattle.coverage - 1) > 10e-4:
-                        counter += 1
-                        if counter == 1000:
-                            f = True
-                            break
-                        cattle.tick()
-                    if f:
-                        break
-                if f:
                     failed += 1
-            failures.append(failed / 10)
-        plt.plot(list(range(3, 21, 2)), failures)
+            failures.append(failed / number_of_tries)
+            if len(failures) >= 5 and failures[-1] == failures[-2] == failures[-3] == failures[-4] == failures[-5] == 0:
+                break
+        plt.plot(K, failures)
         plt.show()
     else:
         print("ERROR: Unknown config!")
